@@ -2,10 +2,29 @@ import { useEffect, useMemo, useState } from 'react'
 
 const STORAGE_KEY = 'ctc-calculator-settings'
 
-const defaultComponents = [
-  { id: crypto.randomUUID(), name: 'Base', percentage: 50 },
-  { id: crypto.randomUUID(), name: 'Special', percentage: 50 },
+const commonComponentNames = [
+  'Base',
+  'HRA',
+  'Special',
+  'Conveyance',
+  'Medical',
+  'LTA',
+  'PF',
+  'Gratuity',
+  'Bonus',
 ]
+
+const defaultPercentageMap = {
+  Base: 50,
+  HRA: 25,
+  Special: 25,
+}
+
+const defaultComponents = commonComponentNames.map((name) => ({
+  id: crypto.randomUUID(),
+  name,
+  percentage: defaultPercentageMap[name] ?? 0,
+}))
 
 const getInitialState = () => {
   try {
@@ -96,32 +115,7 @@ function App() {
       }
     })
 
-  const copyForWord = async () => {
-    const rows = buildCalculationRows()
-    const lines = [
-      `CTC (Yearly)\t${formatMoney(ctc)}`,
-      '',
-      'Component\tPercentage (%)\tMonthly\tYearly',
-      ...rows.map(
-        (row) =>
-          `${row.component}\t${row.percentage.toFixed(2)}\t${formatMoney(
-            row.monthly,
-          )}\t${formatMoney(row.yearly)}`,
-      ),
-      `Total\t${totalPercentage.toFixed(2)}%\t${formatMoney(
-        monthlyTotal,
-      )}\t${formatMoney(ctc)}`,
-    ]
-
-    try {
-      await navigator.clipboard.writeText(lines.join('\n'))
-      setCopyStatus('Copied. Paste directly into Word.')
-    } catch {
-      setCopyStatus('Copy failed. Use Download Word instead.')
-    }
-  }
-
-  const downloadWordFile = () => {
+  const buildWordHtml = () => {
     const rows = buildCalculationRows()
     const tableRows = rows
       .map(
@@ -134,7 +128,7 @@ function App() {
       )
       .join('')
 
-    const html = `<!doctype html>
+    return `<!doctype html>
 <html>
 <head>
   <meta charset="utf-8" />
@@ -173,14 +167,43 @@ function App() {
   </table>
 </body>
 </html>`
+  }
 
-    const blob = new Blob([html], { type: 'application/msword' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'ctc-calculation.doc'
-    link.click()
-    URL.revokeObjectURL(url)
+  const buildPlainText = () => {
+    const rows = buildCalculationRows()
+    return [
+      `CTC (Yearly)\t${formatMoney(ctc)}`,
+      '',
+      'Component\tPercentage (%)\tMonthly\tYearly',
+      ...rows.map(
+        (row) =>
+          `${row.component}\t${row.percentage.toFixed(2)}\t${formatMoney(
+            row.monthly,
+          )}\t${formatMoney(row.yearly)}`,
+      ),
+      `Total\t${totalPercentage.toFixed(2)}%\t${formatMoney(
+        monthlyTotal,
+      )}\t${formatMoney(ctc)}`,
+    ].join('\n')
+  }
+
+  const copyForWord = async () => {
+    try {
+      const html = buildWordHtml()
+      const text = buildPlainText()
+      if (window.ClipboardItem && navigator.clipboard?.write) {
+        const item = new ClipboardItem({
+          'text/html': new Blob([html], { type: 'text/html' }),
+          'text/plain': new Blob([text], { type: 'text/plain' }),
+        })
+        await navigator.clipboard.write([item])
+      } else {
+        await navigator.clipboard.writeText(text)
+      }
+      setCopyStatus('Copied as formatted table. Paste into Word.')
+    } catch {
+      setCopyStatus('Copy failed. Use Download Word instead.')
+    }
   }
 
   return (
@@ -287,13 +310,6 @@ function App() {
               className="rounded-lg border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:border-slate-400 hover:bg-slate-800"
             >
               Copy for Word
-            </button>
-            <button
-              type="button"
-              onClick={downloadWordFile}
-              className="rounded-lg border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:border-slate-400 hover:bg-slate-800"
-            >
-              Download Word (.doc)
             </button>
           </div>
           <p className="text-sm text-slate-300">
