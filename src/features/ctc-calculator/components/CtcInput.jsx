@@ -1,22 +1,65 @@
-export const CtcInput = ({ ctc, isDark, onChange }) => (
-  <div className="mt-6 flex flex-wrap items-center gap-3">
-    <label
-      htmlFor="ctc"
-      className={`text-base font-semibold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}
-    >
-      CTC (Yearly)
-    </label>
-    <input
-      id="ctc"
-      type="number"
-      min="0"
-      value={ctc}
-      onChange={(e) => onChange(Number(e.target.value) || 0)}
-      className={`w-full max-w-xs rounded-lg border px-4 py-2.5 text-base outline-none ring-cyan-400 placeholder:text-slate-500 focus:ring-2 ${
-        isDark
-          ? 'border-slate-700 bg-slate-950'
-          : 'border-slate-300 bg-white text-slate-900'
-      }`}
-    />
+export const CtcInput = ({
+  ctc,
+  monthlyTotal,
+  inputMode,
+  isDark,
+  onModeChange,
+  onCtcChange,
+  onMonthlyChange,
+}) => (
+  <div className="mt-6 space-y-3">
+    <div className="flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        onClick={() => onModeChange('ctc')}
+        className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition ${
+          inputMode === 'ctc'
+            ? 'border-cyan-400 bg-cyan-400 text-slate-950'
+            : isDark
+              ? 'border-slate-600 text-slate-100 hover:border-slate-400'
+              : 'border-slate-300 text-slate-800 hover:border-slate-400'
+        }`}
+      >
+        CTC Input
+      </button>
+      <button
+        type="button"
+        onClick={() => onModeChange('monthly')}
+        className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition ${
+          inputMode === 'monthly'
+            ? 'border-cyan-400 bg-cyan-400 text-slate-950'
+            : isDark
+              ? 'border-slate-600 text-slate-100 hover:border-slate-400'
+              : 'border-slate-300 text-slate-800 hover:border-slate-400'
+        }`}
+      >
+        Monthly Input
+      </button>
+    </div>
+
+    <div className="flex flex-wrap items-center gap-3">
+      <label
+        htmlFor="primary-input"
+        className={`text-base font-semibold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}
+      >
+        {inputMode === 'monthly' ? 'Monthly Total' : 'CTC (Yearly)'}
+      </label>
+      <input
+        id="primary-input"
+        type="number"
+        min="0"
+        value={inputMode === 'monthly' ? monthlyTotal : ctc}
+        onChange={(e) => {
+          const value = Number(e.target.value) || 0
+          if (inputMode === 'monthly') onMonthlyChange(value)
+          else onCtcChange(value)
+        }}
+        className={`w-full max-w-xs rounded-lg border px-4 py-2.5 text-base outline-none ring-cyan-400 placeholder:text-slate-500 focus:ring-2 ${
+          isDark
+            ? 'border-slate-700 bg-slate-950'
+            : 'border-slate-300 bg-white text-slate-900'
+        }`}
+      />
+    </div>
   </div>
 )

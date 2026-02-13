@@ -13,9 +13,12 @@ export const CtcCalculatorPage = () => {
     ctc,
     components,
     isDark,
+    inputMode,
     totalPercentage,
     monthlyTotal,
     setCtc,
+    setInputMode,
+    setMonthlyTotalInput,
     updateComponent,
     addComponent,
     removeComponent,
@@ -53,7 +56,15 @@ export const CtcCalculatorPage = () => {
         }`}
       >
         <CalculatorHeader />
-        <CtcInput ctc={ctc} isDark={isDark} onChange={setCtc} />
+        <CtcInput
+          ctc={ctc}
+          monthlyTotal={monthlyTotal}
+          inputMode={inputMode}
+          isDark={isDark}
+          onModeChange={setInputMode}
+          onCtcChange={setCtc}
+          onMonthlyChange={setMonthlyTotalInput}
+        />
         <ComponentsTable
           isDark={isDark}
           ctc={ctc}
