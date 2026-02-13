@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { useCtcCalculator } from './hooks/useCtcCalculator'
 import { formatMoney } from './utils/format'
-import { copyCalculationForWord } from './utils/export'
+import {
+  copyCalculationForWord,
+  exportCalculationToExcelCsv,
+} from './utils/export'
 import { CalculatorHeader } from './components/CalculatorHeader'
 import { CtcInput } from './components/CtcInput'
 import { ComponentsTable } from './components/ComponentsTable'
@@ -40,6 +43,11 @@ export const CtcCalculatorPage = () => {
   const handleReset = () => {
     resetCalculator()
     setCopyStatus('')
+  }
+
+  const handleExportExcel = () => {
+    const message = exportCalculationToExcelCsv({ ctc, components })
+    setCopyStatus(message)
   }
 
   return (
@@ -81,6 +89,7 @@ export const CtcCalculatorPage = () => {
           onAddComponent={addComponent}
           onReset={handleReset}
           onCopyForWord={handleCopyForWord}
+          onExportExcel={handleExportExcel}
           onToggleTheme={toggleTheme}
           copyStatus={copyStatus}
         />

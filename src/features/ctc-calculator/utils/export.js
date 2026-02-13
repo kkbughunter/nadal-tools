@@ -1,14 +1,15 @@
-import { getComponentPriority } from '../constants'
+import { getComponentPriority, getFixedPercentage } from '../constants'
 
 const buildCalculationRows = (components, ctc) =>
   [...components]
     .sort((a, b) => getComponentPriority(a.name) - getComponentPriority(b.name))
     .map((item) => {
-    const yearly = (ctc * item.percentage) / 100
+    const percentage = getFixedPercentage(item.name) ?? item.percentage
+    const yearly = (ctc * percentage) / 100
     const monthly = yearly / 12
     return {
       component: item.name,
-      percentage: item.percentage,
+      percentage,
       monthly,
       yearly,
     }
@@ -113,4 +114,34 @@ export const copyCalculationForWord = async (payload) => {
   } catch {
     return 'Copy failed. Please try again.'
   }
+}
+
+const csvEscape = (value) => {
+  const str = String(value)
+  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+    return `"${str.replaceAll('"', '""')}"`
+  }
+  return str
+}
+
+export const exportCalculationToExcelCsv = ({ ctc, components }) => {
+  const rows = buildCalculationRows(components, ctc).filter((row) => row.percentage !== 0)
+  const header = 'Component Name,Percentage,Monthly,Yearly'
+  const lines = rows.map((row) =>
+    [
+      csvEscape(row.component),
+      row.percentage.toFixed(2),
+      row.monthly.toFixed(2),
+      row.yearly.toFixed(2),
+    ].join(','),
+  )
+  const csvContent = [header, ...lines].join('\n')
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'ctc-calculation.csv'
+  link.click()
+  URL.revokeObjectURL(url)
+  return 'Excel export downloaded.'
 }

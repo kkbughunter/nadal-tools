@@ -4,6 +4,7 @@ export const CalculatorActions = ({
   onAddComponent,
   onReset,
   onCopyForWord,
+  onExportExcel,
   onToggleTheme,
   copyStatus,
 }) => (
@@ -38,6 +39,17 @@ export const CalculatorActions = ({
           }`}
         >
           Copy for Word
+        </button>
+        <button
+          type="button"
+          onClick={onExportExcel}
+          className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
+            isDark
+              ? 'border-slate-600 text-slate-100 hover:border-slate-400 hover:bg-slate-800'
+              : 'border-slate-300 text-slate-800 hover:border-slate-400 hover:bg-slate-100'
+          }`}
+        >
+          Export Excel
         </button>
         <button
           type="button"
