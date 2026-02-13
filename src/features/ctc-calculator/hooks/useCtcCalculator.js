@@ -7,6 +7,7 @@ export const useCtcCalculator = () => {
   const [ctc, setCtc] = useState(initialState.ctc)
   const [components, setComponents] = useState(initialState.components)
   const [theme, setTheme] = useState('light')
+  const [inputMode, setInputMode] = useState('ctc')
 
   const totalPercentage = useMemo(
     () =>
@@ -44,18 +45,23 @@ export const useCtcCalculator = () => {
   const resetCalculator = () => {
     setCtc(DEFAULT_CTC)
     setComponents(createDefaultComponents())
+    setInputMode('ctc')
   }
 
   const toggleTheme = () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
+  const setMonthlyTotalInput = (monthlyValue) => setCtc(monthlyValue * 12)
 
   return {
     ctc,
     components,
     theme,
     isDark,
+    inputMode,
     totalPercentage,
     monthlyTotal,
     setCtc,
+    setInputMode,
+    setMonthlyTotalInput,
     updateComponent,
     addComponent,
     removeComponent,
