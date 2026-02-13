@@ -1,5 +1,9 @@
+import { getComponentPriority } from '../constants'
+
 const buildCalculationRows = (components, ctc) =>
-  components.map((item) => {
+  [...components]
+    .sort((a, b) => getComponentPriority(a.name) - getComponentPriority(b.name))
+    .map((item) => {
     const yearly = (ctc * item.percentage) / 100
     const monthly = yearly / 12
     return {

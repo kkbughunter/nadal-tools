@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { DEFAULT_CTC } from '../constants'
+import { DEFAULT_CTC, getFixedPercentage, isNonDeletableComponent } from '../constants'
 import { createDefaultComponents, createDefaultState } from '../utils/defaults'
 
 export const useCtcCalculator = () => {
@@ -23,7 +23,27 @@ export const useCtcCalculator = () => {
 
   const updateComponent = (id, key, value) => {
     setComponents((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, [key]: value } : item)),
+      prev.map((item) => {
+        if (item.id !== id) return item
+
+        if (key === 'name') {
+          if (isNonDeletableComponent(item.name)) return item
+          const nextName = typeof value === 'string' ? value : item.name
+          const fixedNext = getFixedPercentage(nextName)
+          return {
+            ...item,
+            name: nextName,
+            percentage: fixedNext ?? item.percentage,
+          }
+        }
+
+        if (key === 'percentage') {
+          const fixed = getFixedPercentage(item.name)
+          return { ...item, percentage: fixed ?? value }
+        }
+
+        return { ...item, [key]: value }
+      }),
     )
   }
 
@@ -38,6 +58,8 @@ export const useCtcCalculator = () => {
   const removeComponent = (id) => {
     setComponents((prev) => {
       if (prev.length <= 1) return prev
+      const target = prev.find((item) => item.id === id)
+      if (target && isNonDeletableComponent(target.name)) return prev
       return prev.filter((item) => item.id !== id)
     })
   }
