@@ -1,5 +1,7 @@
-const PF_RATE = 0.12
-const ESIC_RATE = 0.0325
+const PF_PERCENTAGE = 12
+const ESIC_PERCENTAGE = 3.25
+const PF_RATE = PF_PERCENTAGE / 100
+const ESIC_RATE = ESIC_PERCENTAGE / 100
 
 const toRate = (percentageValue) => {
   const safeValue = Number.isFinite(percentageValue) ? percentageValue : 0
@@ -26,8 +28,8 @@ export const calculateCtcComponents = (ctcValue, basicPercentageValue, hraPercen
     { component: 'Basic', yearly: basic, isSystemCalculated: false },
     { component: 'HRA', yearly: hra, isSystemCalculated: false },
     { component: 'Special Allowance', yearly: special, isSystemCalculated: true },
-    { component: 'Employer PF', yearly: employerPf, isSystemCalculated: true },
-    { component: 'Employer ESIC', yearly: employerEsic, isSystemCalculated: true },
+    { component: 'EPF', yearly: employerPf, isSystemCalculated: true },
+    { component: 'ESIC', yearly: employerEsic, isSystemCalculated: true },
   ].map((row) => ({
     ...row,
     monthly: row.yearly / 12,
