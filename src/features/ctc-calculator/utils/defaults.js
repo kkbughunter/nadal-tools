@@ -9,4 +9,5 @@ export const createDefaultState = () => ({
   basicPercentage: DEFAULT_BASIC_PERCENTAGE,
   hraPercentage: DEFAULT_HRA_PERCENTAGE,
   roundResults: false,
+  includeEsic: true,
 })

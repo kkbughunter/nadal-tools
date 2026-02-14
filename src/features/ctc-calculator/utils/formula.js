@@ -9,20 +9,26 @@ const toRate = (percentageValue) => {
   return clamped / 100
 }
 
-export const calculateCtcComponents = (ctcValue, basicPercentageValue, hraPercentageValue) => {
+export const calculateCtcComponents = (
+  ctcValue,
+  basicPercentageValue,
+  hraPercentageValue,
+  includeEsic = true,
+) => {
   const ctc = Number.isFinite(ctcValue) ? Math.max(ctcValue, 0) : 0
   const basicRate = toRate(basicPercentageValue)
   const hraRate = toRate(hraPercentageValue)
+  const effectiveEsicRate = includeEsic ? ESIC_RATE : 0
 
   const basic = ctc * basicRate
   const hra = basic * hraRate
 
   const special =
-    (ctc - (1 + PF_RATE + ESIC_RATE) * basic - (1 + ESIC_RATE) * hra) /
-    (1 + PF_RATE + ESIC_RATE)
+    (ctc - (1 + PF_RATE + effectiveEsicRate) * basic - (1 + effectiveEsicRate) * hra) /
+    (1 + PF_RATE + effectiveEsicRate)
 
   const employerPf = (basic + special) * PF_RATE
-  const employerEsic = (basic + hra + special) * ESIC_RATE
+  const employerEsic = (basic + hra + special) * effectiveEsicRate
 
   const rows = [
     { component: 'Basic', yearly: basic, isSystemCalculated: false },

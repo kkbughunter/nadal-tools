@@ -9,12 +9,13 @@ export const useCtcCalculator = () => {
   const [basicPercentage, setBasicPercentage] = useState(initialState.basicPercentage)
   const [hraPercentage, setHraPercentage] = useState(initialState.hraPercentage)
   const [roundResults, setRoundResults] = useState(initialState.roundResults)
+  const [includeEsic, setIncludeEsic] = useState(initialState.includeEsic)
   const [theme, setTheme] = useState('light')
   const [inputMode, setInputMode] = useState('ctc')
 
   const breakdown = useMemo(
-    () => calculateCtcComponents(ctc, basicPercentage, hraPercentage),
-    [ctc, basicPercentage, hraPercentage],
+    () => calculateCtcComponents(ctc, basicPercentage, hraPercentage, includeEsic),
+    [ctc, basicPercentage, hraPercentage, includeEsic],
   )
   const components = breakdown.rows
   const totalPercentage = breakdown.totalPercentage
@@ -27,6 +28,7 @@ export const useCtcCalculator = () => {
     setBasicPercentage(DEFAULT_BASIC_PERCENTAGE)
     setHraPercentage(DEFAULT_HRA_PERCENTAGE)
     setRoundResults(false)
+    setIncludeEsic(true)
     setInputMode('ctc')
   }
 
@@ -42,6 +44,7 @@ export const useCtcCalculator = () => {
     basicPercentage,
     hraPercentage,
     roundResults,
+    includeEsic,
     totalPercentage,
     monthlyTotal,
     setCtc,
@@ -50,6 +53,7 @@ export const useCtcCalculator = () => {
     setBasicPercentage,
     setHraPercentage,
     setRoundResults,
+    setIncludeEsic,
     resetCalculator,
     toggleTheme,
   }

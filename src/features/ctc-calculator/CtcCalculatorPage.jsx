@@ -20,6 +20,7 @@ export const CtcCalculatorPage = () => {
     basicPercentage,
     hraPercentage,
     roundResults,
+    includeEsic,
     totalPercentage,
     monthlyTotal,
     setCtc,
@@ -28,6 +29,7 @@ export const CtcCalculatorPage = () => {
     setBasicPercentage,
     setHraPercentage,
     setRoundResults,
+    setIncludeEsic,
     resetCalculator,
     toggleTheme,
   } = useCtcCalculator()
@@ -74,11 +76,13 @@ export const CtcCalculatorPage = () => {
           monthlyTotal={monthlyTotal}
           inputMode={inputMode}
           roundResults={roundResults}
+          includeEsic={includeEsic}
           isDark={isDark}
           onModeChange={setInputMode}
           onCtcChange={setCtc}
           onMonthlyChange={setMonthlyTotalInput}
           onToggleRoundResults={() => setRoundResults((prev) => !prev)}
+          onToggleIncludeEsic={() => setIncludeEsic((prev) => !prev)}
         />
         <ComponentsTable
           isDark={isDark}
@@ -86,6 +90,7 @@ export const CtcCalculatorPage = () => {
           components={components}
           basicPercentage={basicPercentage}
           hraPercentage={hraPercentage}
+          includeEsic={includeEsic}
           totalPercentage={totalPercentage}
           monthlyTotal={monthlyTotal}
           formatMoney={displayMoney}

@@ -4,6 +4,7 @@ export const ComponentsTable = ({
   components,
   basicPercentage,
   hraPercentage,
+  includeEsic,
   totalPercentage,
   monthlyTotal,
   formatMoney,
@@ -86,7 +87,7 @@ export const ComponentsTable = ({
                 ) : item.component === 'EPF' ? (
                   '12% (fixed)'
                 ) : item.component === 'ESIC' ? (
-                  '3.25% (fixed)'
+                  includeEsic ? '3.25% (fixed)' : 'Excluded'
                 ) : (
                   'System calculated'
                 )}
