@@ -17,17 +17,22 @@ export const CtcCalculatorPage = () => {
     components,
     isDark,
     inputMode,
+    basicPercentage,
+    hraPercentage,
+    roundResults,
     totalPercentage,
     monthlyTotal,
     setCtc,
     setInputMode,
     setMonthlyTotalInput,
-    updateComponent,
-    addComponent,
-    removeComponent,
+    setBasicPercentage,
+    setHraPercentage,
+    setRoundResults,
     resetCalculator,
     toggleTheme,
   } = useCtcCalculator()
+
+  const displayMoney = (value) => formatMoney(value, { rounded: roundResults })
 
   const handleCopyForWord = async () => {
     const message = await copyCalculationForWord({
@@ -35,7 +40,7 @@ export const CtcCalculatorPage = () => {
       components,
       totalPercentage,
       monthlyTotal,
-      formatMoney,
+      formatMoney: displayMoney,
     })
     setCopyStatus(message)
   }
@@ -46,7 +51,7 @@ export const CtcCalculatorPage = () => {
   }
 
   const handleExportExcel = () => {
-    const message = exportCalculationToExcelCsv({ ctc, components })
+    const message = exportCalculationToExcelCsv({ components })
     setCopyStatus(message)
   }
 
@@ -68,25 +73,27 @@ export const CtcCalculatorPage = () => {
           ctc={ctc}
           monthlyTotal={monthlyTotal}
           inputMode={inputMode}
+          roundResults={roundResults}
           isDark={isDark}
           onModeChange={setInputMode}
           onCtcChange={setCtc}
           onMonthlyChange={setMonthlyTotalInput}
+          onToggleRoundResults={() => setRoundResults((prev) => !prev)}
         />
         <ComponentsTable
           isDark={isDark}
           ctc={ctc}
           components={components}
+          basicPercentage={basicPercentage}
+          hraPercentage={hraPercentage}
           totalPercentage={totalPercentage}
           monthlyTotal={monthlyTotal}
-          formatMoney={formatMoney}
-          onUpdateComponent={updateComponent}
-          onRemoveComponent={removeComponent}
+          formatMoney={displayMoney}
+          onBasicPercentageChange={setBasicPercentage}
+          onHraPercentageChange={setHraPercentage}
         />
         <CalculatorActions
           isDark={isDark}
-          totalPercentage={totalPercentage}
-          onAddComponent={addComponent}
           onReset={handleReset}
           onCopyForWord={handleCopyForWord}
           onExportExcel={handleExportExcel}

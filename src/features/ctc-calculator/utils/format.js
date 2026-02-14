@@ -1,5 +1,5 @@
-export const formatMoney = (value) =>
+export const formatMoney = (value, { rounded = false } = {}) =>
   new Intl.NumberFormat('en-IN', {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 2,
+    maximumFractionDigits: rounded ? 0 : 2,
+    minimumFractionDigits: rounded ? 0 : 2,
   }).format(value)

@@ -1,17 +1,12 @@
 import {
-  commonComponentNames,
-  defaultPercentageMap,
+  DEFAULT_BASIC_PERCENTAGE,
   DEFAULT_CTC,
+  DEFAULT_HRA_PERCENTAGE,
 } from '../constants'
-
-export const createDefaultComponents = () =>
-  commonComponentNames.map((name) => ({
-    id: crypto.randomUUID(),
-    name,
-    percentage: defaultPercentageMap[name] ?? 0,
-  }))
 
 export const createDefaultState = () => ({
   ctc: DEFAULT_CTC,
-  components: createDefaultComponents(),
+  basicPercentage: DEFAULT_BASIC_PERCENTAGE,
+  hraPercentage: DEFAULT_HRA_PERCENTAGE,
+  roundResults: false,
 })

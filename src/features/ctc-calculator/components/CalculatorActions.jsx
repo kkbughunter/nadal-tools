@@ -1,7 +1,5 @@
 export const CalculatorActions = ({
   isDark,
-  totalPercentage,
-  onAddComponent,
   onReset,
   onCopyForWord,
   onExportExcel,
@@ -11,13 +9,6 @@ export const CalculatorActions = ({
   <>
     <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
       <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={onAddComponent}
-          className="rounded-lg bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
-        >
-          + Add Component
-        </button>
         <button
           type="button"
           onClick={onReset}
@@ -64,9 +55,7 @@ export const CalculatorActions = ({
         </button>
       </div>
       <p className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-        {Math.abs(totalPercentage - 100) < 0.001
-          ? 'Total percentage is 100%.'
-          : `Adjust percentages to 100% (current: ${totalPercentage.toFixed(2)}%).`}
+        Basic % and HRA % are user-controlled. Other components are system calculated.
       </p>
     </div>
     {copyStatus ? (

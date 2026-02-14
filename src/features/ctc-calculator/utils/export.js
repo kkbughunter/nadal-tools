@@ -1,19 +1,10 @@
-import { getComponentPriority, getFixedPercentage } from '../constants'
-
-const buildCalculationRows = (components, ctc) =>
-  [...components]
-    .sort((a, b) => getComponentPriority(a.name) - getComponentPriority(b.name))
-    .map((item) => {
-    const percentage = getFixedPercentage(item.name) ?? item.percentage
-    const yearly = (ctc * percentage) / 100
-    const monthly = yearly / 12
-    return {
-      component: item.name,
-      percentage,
-      monthly,
-      yearly,
-    }
-  })
+const buildCalculationRows = (components) =>
+  components.map((item) => ({
+    component: item.component,
+    percentage: item.percentage,
+    monthly: item.monthly,
+    yearly: item.yearly,
+  }))
 
 const buildWordHtml = ({
   ctc,
@@ -22,7 +13,7 @@ const buildWordHtml = ({
   monthlyTotal,
   formatMoney,
 }) => {
-  const rows = buildCalculationRows(components, ctc)
+  const rows = buildCalculationRows(components)
   const tableRows = rows
     .map(
       (row) => `<tr>
@@ -80,7 +71,7 @@ const buildPlainText = ({
   monthlyTotal,
   formatMoney,
 }) => {
-  const rows = buildCalculationRows(components, ctc)
+  const rows = buildCalculationRows(components)
   return [
     `CTC (Yearly)\t${formatMoney(ctc)}`,
     '',
@@ -124,8 +115,8 @@ const csvEscape = (value) => {
   return str
 }
 
-export const exportCalculationToExcelCsv = ({ ctc, components }) => {
-  const rows = buildCalculationRows(components, ctc).filter((row) => row.percentage !== 0)
+export const exportCalculationToExcelCsv = ({ components }) => {
+  const rows = buildCalculationRows(components).filter((row) => row.yearly !== 0)
   const header = 'Component Name,Percentage,Monthly,Yearly'
   const lines = rows.map((row) =>
     [
