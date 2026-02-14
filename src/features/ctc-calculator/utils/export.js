@@ -1,7 +1,6 @@
 const buildCalculationRows = (components) =>
   components.map((item) => ({
     component: item.component,
-    percentage: item.percentage,
     monthly: item.monthly,
     yearly: item.yearly,
   }))
@@ -9,7 +8,6 @@ const buildCalculationRows = (components) =>
 const buildWordHtml = ({
   ctc,
   components,
-  totalPercentage,
   monthlyTotal,
   formatMoney,
 }) => {
@@ -18,7 +16,6 @@ const buildWordHtml = ({
     .map(
       (row) => `<tr>
   <td>${row.component}</td>
-  <td>${row.percentage.toFixed(2)}%</td>
   <td>${formatMoney(row.monthly)}</td>
   <td>${formatMoney(row.yearly)}</td>
 </tr>`,
@@ -45,7 +42,6 @@ const buildWordHtml = ({
     <thead>
       <tr>
         <th>Component</th>
-        <th>Percentage (%)</th>
         <th>Monthly</th>
         <th>Yearly</th>
       </tr>
@@ -54,7 +50,6 @@ const buildWordHtml = ({
       ${tableRows}
       <tr class="total">
         <td>Total</td>
-        <td>${totalPercentage.toFixed(2)}%</td>
         <td>${formatMoney(monthlyTotal)}</td>
         <td>${formatMoney(ctc)}</td>
       </tr>
@@ -67,7 +62,6 @@ const buildWordHtml = ({
 const buildPlainText = ({
   ctc,
   components,
-  totalPercentage,
   monthlyTotal,
   formatMoney,
 }) => {
@@ -75,16 +69,11 @@ const buildPlainText = ({
   return [
     `CTC (Yearly)\t${formatMoney(ctc)}`,
     '',
-    'Component\tPercentage (%)\tMonthly\tYearly',
+    'Component\tMonthly\tYearly',
     ...rows.map(
-      (row) =>
-        `${row.component}\t${row.percentage.toFixed(2)}\t${formatMoney(
-          row.monthly,
-        )}\t${formatMoney(row.yearly)}`,
+      (row) => `${row.component}\t${formatMoney(row.monthly)}\t${formatMoney(row.yearly)}`,
     ),
-    `Total\t${totalPercentage.toFixed(2)}%\t${formatMoney(
-      monthlyTotal,
-    )}\t${formatMoney(ctc)}`,
+    `Total\t${formatMoney(monthlyTotal)}\t${formatMoney(ctc)}`,
   ].join('\n')
 }
 
@@ -117,11 +106,10 @@ const csvEscape = (value) => {
 
 export const exportCalculationToExcelCsv = ({ components }) => {
   const rows = buildCalculationRows(components).filter((row) => row.yearly !== 0)
-  const header = 'Component Name,Percentage,Monthly,Yearly'
+  const header = 'Component Name,Monthly,Yearly'
   const lines = rows.map((row) =>
     [
       csvEscape(row.component),
-      row.percentage.toFixed(2),
       row.monthly.toFixed(2),
       row.yearly.toFixed(2),
     ].join(','),
