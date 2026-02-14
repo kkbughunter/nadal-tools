@@ -83,9 +83,9 @@ export const ComponentsTable = ({
                     />
                     <span>%</span>
                   </div>
-                ) : item.component === 'Employer PF' ? (
+                ) : item.component === 'EPF' ? (
                   '12% (fixed)'
-                ) : item.component === 'Employer ESIC' ? (
+                ) : item.component === 'ESIC' ? (
                   '3.25% (fixed)'
                 ) : (
                   'System calculated'
