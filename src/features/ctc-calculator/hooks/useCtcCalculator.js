@@ -13,12 +13,16 @@ export const useCtcCalculator = () => {
   const [theme, setTheme] = useState('light')
   const [inputMode, setInputMode] = useState('ctc')
 
+  const [pfCapOption, setPfCapOption] = useState('full')
+
   const breakdown = useMemo(
-    () => calculateCtcComponents(ctc, basicPercentage, hraPercentage, includeEsic),
-    [ctc, basicPercentage, hraPercentage, includeEsic],
+    () => calculateCtcComponents(ctc, basicPercentage, hraPercentage, includeEsic, pfCapOption),
+    [ctc, basicPercentage, hraPercentage, includeEsic, pfCapOption],
   )
   const components = breakdown.rows
   const totalPercentage = breakdown.totalPercentage
+  const esicEligible = breakdown.esicEligible
+  const pfCapped = breakdown.pfCapped
 
   const monthlyTotal = useMemo(() => ctc / 12, [ctc])
   const isDark = theme === 'dark'
@@ -46,6 +50,8 @@ export const useCtcCalculator = () => {
     roundResults,
     includeEsic,
     totalPercentage,
+    esicEligible,
+    pfCapped,
     monthlyTotal,
     setCtc,
     setInputMode,
@@ -54,6 +60,8 @@ export const useCtcCalculator = () => {
     setHraPercentage,
     setRoundResults,
     setIncludeEsic,
+    pfCapOption,
+    setPfCapOption,
     resetCalculator,
     toggleTheme,
   }

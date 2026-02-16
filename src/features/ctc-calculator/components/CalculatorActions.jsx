@@ -42,7 +42,7 @@ export const CalculatorActions = ({
         >
           Export Excel
         </button>
-        <button
+        {/* <button
           type="button"
           onClick={onToggleTheme}
           className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
@@ -52,11 +52,8 @@ export const CalculatorActions = ({
           }`}
         >
           {isDark ? 'Light Theme' : 'Dark Theme'}
-        </button>
+        </button> */}
       </div>
-      <p className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-        Basic % and HRA % are user-controlled. Other components are system calculated.
-      </p>
     </div>
     {copyStatus ? (
       <p className={`mt-3 text-sm ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>

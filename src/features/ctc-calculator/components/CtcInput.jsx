@@ -6,12 +6,14 @@ export const CtcInput = ({
   inputMode,
   roundResults,
   includeEsic,
+  pfCapOption,
   isDark,
   onModeChange,
   onCtcChange,
   onMonthlyChange,
   onToggleRoundResults,
   onToggleIncludeEsic,
+  onPfCapChange,
 }) => {
   const committedValue = inputMode === 'monthly' ? monthlyTotal : ctc
   const [draftValue, setDraftValue] = useState(String(committedValue))
@@ -100,7 +102,7 @@ export const CtcInput = ({
         >
           Round: {roundResults ? 'Enabled' : 'Disabled'}
         </button>
-        <button
+        {/* <button
           type="button"
           onClick={onToggleIncludeEsic}
           className={`rounded-lg border px-3 py-2 text-sm font-semibold transition ${
@@ -108,10 +110,21 @@ export const CtcInput = ({
               ? 'border-cyan-400 bg-cyan-400 text-slate-950'
               : isDark
                 ? 'border-slate-600 text-slate-100 hover:border-slate-400'
-                : 'border-slate-300 text-slate-800 hover:border-slate-400'
+                  : 'border-slate-300 text-slate-800 hover:border-slate-400'
           }`}
         >
           ESIC: {includeEsic ? 'Included' : 'Excluded'}
+        </button> */}
+        <button
+          type="button"
+          onClick={() => onPfCapChange(pfCapOption === 'full' ? 'basic' : 'full')}
+          className={`rounded-lg border px-3 py-2 text-sm font-semibold transition ${
+            isDark
+              ? 'border-slate-600 text-slate-100 hover:border-slate-400'
+              : 'border-slate-300 text-slate-800 hover:border-slate-400'
+          }`}
+        >
+          PF Cap: {pfCapOption === 'full' ? 'Full' : 'Basic/15K'}
         </button>
       </div>
     </div>

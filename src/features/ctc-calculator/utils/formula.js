@@ -2,6 +2,8 @@ const PF_PERCENTAGE = 12
 const ESIC_PERCENTAGE = 3.25
 const PF_RATE = PF_PERCENTAGE / 100
 const ESIC_RATE = ESIC_PERCENTAGE / 100
+const PF_THRESHOLD = 15000
+const ESIC_THRESHOLD = 21000
 
 const toRate = (percentageValue) => {
   const safeValue = Number.isFinite(percentageValue) ? percentageValue : 0
@@ -14,21 +16,39 @@ export const calculateCtcComponents = (
   basicPercentageValue,
   hraPercentageValue,
   includeEsic = true,
+  pfCapOption = 'full',
 ) => {
   const ctc = Number.isFinite(ctcValue) ? Math.max(ctcValue, 0) : 0
   const basicRate = toRate(basicPercentageValue)
   const hraRate = toRate(hraPercentageValue)
-  const effectiveEsicRate = includeEsic ? ESIC_RATE : 0
 
   const basic = ctc * basicRate
   const hra = basic * hraRate
 
-  const special =
-    (ctc - (1 + PF_RATE + effectiveEsicRate) * basic - (1 + effectiveEsicRate) * hra) /
-    (1 + PF_RATE + effectiveEsicRate)
+  let special, employerPf, employerEsic
 
-  const employerPf = (basic + special) * PF_RATE
-  const employerEsic = (basic + hra + special) * effectiveEsicRate
+  const basicPlusSpecialMonthly = (basic + 0) / 12
+  
+  if (basicPlusSpecialMonthly <= PF_THRESHOLD) {
+    const pfRate = PF_RATE
+    const esicRate = includeEsic ? ESIC_RATE : 0
+    special = (ctc - (1 + pfRate + esicRate) * basic - (1 + esicRate) * hra) / (1 + pfRate + esicRate)
+    
+    const basicPlusSpecial = basic + special
+    employerPf = basicPlusSpecial * pfRate
+    
+    const totalForEsic = basic + hra + special
+    employerEsic = (totalForEsic / 12 <= ESIC_THRESHOLD && includeEsic) ? totalForEsic * esicRate : 0
+  } else {
+    const pfBase = pfCapOption === 'basic' ? basic : PF_THRESHOLD * 12
+    const pfRate = PF_RATE
+    const esicRate = 0
+    
+    special = ctc - basic - hra - pfBase * pfRate
+    employerPf = pfBase * pfRate
+    employerEsic = 0
+
+  }
 
   const rows = [
     { component: 'Basic', yearly: basic, isSystemCalculated: false },
@@ -47,5 +67,7 @@ export const calculateCtcComponents = (
     totalYearly: rows.reduce((sum, row) => sum + row.yearly, 0),
     totalMonthly: rows.reduce((sum, row) => sum + row.monthly, 0),
     totalPercentage: rows.reduce((sum, row) => sum + row.percentage, 0),
+    esicEligible: (basic + hra + special) / 12 <= ESIC_THRESHOLD && includeEsic,
+    pfCapped: (basic + special) / 12 > PF_THRESHOLD,
   }
 }

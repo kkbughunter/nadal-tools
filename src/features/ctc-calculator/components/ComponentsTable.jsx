@@ -5,6 +5,9 @@ export const ComponentsTable = ({
   basicPercentage,
   hraPercentage,
   includeEsic,
+  esicEligible,
+  pfCapped,
+  pfCapOption,
   totalPercentage,
   monthlyTotal,
   formatMoney,
@@ -20,6 +23,21 @@ export const ComponentsTable = ({
     const parsed = Number(value)
     if (!Number.isFinite(parsed)) return
     onChange(Math.max(0, Math.min(parsed, 100)))
+  }
+
+  const getFormulaTooltip = (component) => {
+    if (component === 'Basic') return 'Basic = CTC x Basic%'
+    if (component === 'HRA') return 'HRA = Basic x HRA%'
+    if (component === 'Special Allowance')
+      return includeEsic
+        ? 'Special = CTC - (Basic + HRA + EPF + ESIC)'
+        : 'Special = CTC - (Basic + HRA + EPF)'
+    if (component === 'EPF') return 'EPF = (Basic + Special Allowance) x 12%'
+    if (component === 'ESIC')
+      return includeEsic
+        ? 'ESIC = (Basic + HRA + Special Allowance) x 3.25%'
+        : 'ESIC is excluded'
+    return 'System calculated'
   }
 
   return (
@@ -48,7 +66,7 @@ export const ComponentsTable = ({
               className={`border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}
             >
               <td className="px-4 py-3">{item.component}</td>
-              <td className="px-4 py-3">
+              <td className="px-4 py-3" title={getFormulaTooltip(item.component)}>
                 {item.component === 'Basic' ? (
                   <div className="flex items-center gap-2">
                     <input
@@ -85,9 +103,17 @@ export const ComponentsTable = ({
                     <span>%</span>
                   </div>
                 ) : item.component === 'EPF' ? (
-                  '12% (fixed)'
+                  pfCapped ? `12% (${pfCapOption === 'basic' ? 'on Basic' : 'Restricted PF Wage'})` : '12% (fixed)'
                 ) : item.component === 'ESIC' ? (
-                  includeEsic ? '3.25% (fixed)' : 'Excluded'
+                  includeEsic ? (
+                    esicEligible ? (
+                      '3.25% (fixed)'
+                    ) : (
+                      <span className="text-red-500">3.25% (not eligible)</span>
+                    )
+                  ) : (
+                    'Excluded'
+                  )
                 ) : (
                   'System calculated'
                 )}
