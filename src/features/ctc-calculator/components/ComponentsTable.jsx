@@ -32,10 +32,11 @@ export const ComponentsTable = ({
       return includeEsic
         ? 'Special = CTC - (Basic + HRA + EPF + ESIC)'
         : 'Special = CTC - (Basic + HRA + EPF)'
-    if (component === 'EPF') return 'EPF = (Basic + Special Allowance) x 12%'
+    if (component === 'EPF')
+      return 'EPF = (Basic + Special) x 12% when <= 15000 monthly, else capped/base option x 12%'
     if (component === 'ESIC')
       return includeEsic
-        ? 'ESIC = (Basic + HRA + Special Allowance) x 3.25%'
+        ? 'ESIC = (Basic + HRA + Special) x 3.25% only when monthly total < 22804'
         : 'ESIC is excluded'
     return 'System calculated'
   }
