@@ -1,4 +1,4 @@
-export const DEFAULT_CTC = 180000
+export const DEFAULT_CTC = 0
 export const DEFAULT_BASIC_PERCENTAGE = 50
 export const DEFAULT_HRA_PERCENTAGE = 50
 

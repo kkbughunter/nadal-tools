@@ -31,7 +31,7 @@ export const useCtcCalculator = () => {
     setCtc(DEFAULT_CTC)
     setBasicPercentage(DEFAULT_BASIC_PERCENTAGE)
     setHraPercentage(DEFAULT_HRA_PERCENTAGE)
-    setRoundResults(false)
+    setRoundResults(true)
     setIncludeEsic(true)
     setInputMode('ctc')
   }

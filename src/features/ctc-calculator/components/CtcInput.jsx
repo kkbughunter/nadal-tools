@@ -89,7 +89,7 @@ export const CtcInput = ({
               : 'border-slate-300 bg-white text-slate-900'
           }`}
         />
-        <button
+        {/* <button
           type="button"
           onClick={onToggleRoundResults}
           className={`rounded-lg border px-3 py-2 text-sm font-semibold transition ${
@@ -101,7 +101,7 @@ export const CtcInput = ({
           }`}
         >
           Round: {roundResults ? 'Enabled' : 'Disabled'}
-        </button>
+        </button> */}
         {/* <button
           type="button"
           onClick={onToggleIncludeEsic}

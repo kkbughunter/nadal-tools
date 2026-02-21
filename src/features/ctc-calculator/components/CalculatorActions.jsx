@@ -1,9 +1,7 @@
 export const CalculatorActions = ({
   isDark,
   onReset,
-  onCopyForWord,
   onExportExcel,
-  onToggleTheme,
   copyStatus,
 }) => (
   <>
@@ -19,17 +17,6 @@ export const CalculatorActions = ({
           }`}
         >
           Reset
-        </button>
-        <button
-          type="button"
-          onClick={onCopyForWord}
-          className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
-            isDark
-              ? 'border-slate-600 text-slate-100 hover:border-slate-400 hover:bg-slate-800'
-              : 'border-slate-300 text-slate-800 hover:border-slate-400 hover:bg-slate-100'
-          }`}
-        >
-          Copy for Word
         </button>
         <button
           type="button"

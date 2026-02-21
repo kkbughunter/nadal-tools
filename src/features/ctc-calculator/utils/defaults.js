@@ -8,6 +8,6 @@ export const createDefaultState = () => ({
   ctc: DEFAULT_CTC,
   basicPercentage: DEFAULT_BASIC_PERCENTAGE,
   hraPercentage: DEFAULT_HRA_PERCENTAGE,
-  roundResults: false,
+  roundResults: true,
   includeEsic: true,
 })
