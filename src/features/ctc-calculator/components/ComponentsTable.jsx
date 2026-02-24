@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 export const ComponentsTable = ({
   isDark,
@@ -16,58 +16,21 @@ export const ComponentsTable = ({
   onBasicPercentageChange,
   onHraPercentageChange,
 }) => {
-  const [basicDraft, setBasicDraft] = useState(String(basicPercentage))
-  const [hraDraft, setHraDraft] = useState(String(hraPercentage))
+  const [showSystemCalc, setShowSystemCalc] = useState(false)
+  const basicRow = components.find((row) => row.component === 'Basic')
 
-  useEffect(() => {
-    setBasicDraft(String(basicPercentage))
-  }, [basicPercentage])
-
-  useEffect(() => {
-    setHraDraft(String(hraPercentage))
-  }, [hraPercentage])
-
-  const clampPercentage = (value) => Math.max(0, Math.min(value, 100))
-
-  const handleBasicChange = (value) => {
-    setBasicDraft(value)
-    if (value === '') return
-    const parsed = Number(value)
-    if (!Number.isFinite(parsed)) return
-    onBasicPercentageChange(clampPercentage(parsed))
-  }
-
-  const handleHraChange = (value) => {
-    setHraDraft(value)
-    if (value === '') return
-    const parsed = Number(value)
-    if (!Number.isFinite(parsed)) return
-    onHraPercentageChange(clampPercentage(parsed))
-  }
-
-  const handleBasicBlur = () => {
-    if (basicDraft !== '') {
-      setBasicDraft(String(basicPercentage))
+  const handlePercentageChange = (value, onChange) => {
+    if (value === '') {
+      onChange(0)
       return
     }
-    onBasicPercentageChange(0)
-    setBasicDraft('0')
+    const parsed = Number(value)
+    if (!Number.isFinite(parsed)) return
+    onChange(Math.max(0, Math.min(parsed, 100)))
   }
-
-  const handleHraBlur = () => {
-    if (hraDraft !== '') {
-      setHraDraft(String(hraPercentage))
-      return
-    }
-    onHraPercentageChange(0)
-    setHraDraft('0')
-  }
-
-  const visibleComponents = components.filter(
-    (item) => item.component !== 'ESIC' || esicEligible,
-  )
 
   return (
+    <>
     <div
       className={`mt-6 overflow-x-auto rounded-xl border ${
         isDark ? 'border-slate-800' : 'border-slate-200'
@@ -87,7 +50,7 @@ export const ComponentsTable = ({
           </tr>
         </thead>
         <tbody>
-          {visibleComponents.map((item) => (
+          {components.filter(item => item.component !== 'ESIC' || esicEligible).map((item) => (
             <tr
               key={item.component}
               className={`border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}
@@ -101,10 +64,9 @@ export const ComponentsTable = ({
                       min="0"
                       max="100"
                       step="0.01"
-                      value={basicDraft}
-                      onChange={(e) => handleBasicChange(e.target.value)}
-                      onBlur={handleBasicBlur}
-                      className={`w-24 rounded-md border px-2 py-1.5 text-sm outline-none ring-cyan-400 focus:ring-2 ${
+                      value={basicPercentage}
+                      onChange={(e) => handlePercentageChange(e.target.value, onBasicPercentageChange)}
+                      className={`w-16 rounded-md border px-2 py-1.5 text-sm outline-none ring-cyan-400 focus:ring-2 ${
                         isDark
                           ? 'border-slate-700 bg-slate-950 text-slate-100'
                           : 'border-slate-300 bg-white text-slate-900'
@@ -119,10 +81,9 @@ export const ComponentsTable = ({
                       min="0"
                       max="100"
                       step="0.01"
-                      value={hraDraft}
-                      onChange={(e) => handleHraChange(e.target.value)}
-                      onBlur={handleHraBlur}
-                      className={`w-24 rounded-md border px-2 py-1.5 text-sm outline-none ring-cyan-400 focus:ring-2 ${
+                      value={hraPercentage}
+                      onChange={(e) => handlePercentageChange(e.target.value, onHraPercentageChange)}
+                      className={`w-16 rounded-md border px-2 py-1.5 text-sm outline-none ring-cyan-400 focus:ring-2 ${
                         isDark
                           ? 'border-slate-700 bg-slate-950 text-slate-100'
                           : 'border-slate-300 bg-white text-slate-900'
@@ -130,14 +91,24 @@ export const ComponentsTable = ({
                     />
                     <span>%</span>
                   </div>
+                ) : item.component === 'Special Allowance' ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowSystemCalc(!showSystemCalc)}
+                    className={`text-sm font-medium underline transition ${
+                      isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700'
+                    }`}
+                  >
+                    {showSystemCalc ? 'Hide' : 'Preview'} 
+                  </button>
                 ) : item.component === 'EPF' ? (
-                  pfCapped ? `12% (${pfCapOption === 'basic' ? 'on Basic' : 'Restricted PF Wage'})` : '12% (fixed)'
+                  pfCapped ? `${pfCapOption === 'basic' ? 'On Basic' : 'Restricted PF Wage'}` : 'Fixed'
                 ) : item.component === 'ESIC' ? (
                   includeEsic ? (
                     esicEligible ? (
-                      '3.25% (fixed)'
+                      'Fixed'
                     ) : (
-                      <span className="text-red-500">3.25% (not eligible)</span>
+                      <span className="text-red-500">Not eligible</span>
                     )
                   ) : (
                     'Excluded'
@@ -147,10 +118,14 @@ export const ComponentsTable = ({
                 )}
               </td>
               <td className={`px-4 py-3 text-sm ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
-                {formatMoney(item.monthly)}
+                {showSystemCalc || item.component === 'Basic' || item.component === 'HRA'
+                  ? formatMoney(item.monthly)
+                  : '—'}
               </td>
               <td className={`px-4 py-3 text-sm ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
-                {formatMoney(item.yearly)}
+                {showSystemCalc || item.component === 'Basic' || item.component === 'HRA'
+                  ? formatMoney(item.yearly)
+                  : '—'}
               </td>
             </tr>
           ))}
@@ -167,5 +142,6 @@ export const ComponentsTable = ({
         </tbody>
       </table>
     </div>
+    </>
   )
 }

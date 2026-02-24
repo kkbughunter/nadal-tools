@@ -1,35 +1,66 @@
-const buildCalculationRows = (components) =>
-  components.map((item) => ({
-    component: item.component,
-    monthly: item.monthly,
-    yearly: item.yearly,
-  }))
-
-const csvEscape = (value) => {
-  const str = String(value)
-  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-    return `"${str.replaceAll('"', '""')}"`
-  }
-  return str
+const COMPONENT_LABELS = {
+  EPF: 'EPF Employer Contribution',
+  ESIC: 'ESIC Employer Contribution',
 }
 
-export const exportCalculationToExcelCsv = ({ components }) => {
-  const rows = buildCalculationRows(components).filter((row) => row.yearly !== 0)
-  const header = 'Component Name,Monthly,Yearly'
-  const lines = rows.map((row) =>
-    [
-      csvEscape(row.component),
-      row.monthly.toFixed(2),
-      row.yearly.toFixed(2),
-    ].join(','),
-  )
-  const csvContent = [header, ...lines].join('\n')
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = 'ctc-calculation.csv'
-  link.click()
-  URL.revokeObjectURL(url)
+const toExportRows = (components) =>
+  components
+    .map((item) => ({
+      component: COMPONENT_LABELS[item.component] ?? item.component,
+      monthly: item.monthly,
+      yearly: item.yearly,
+    }))
+    .filter((row) => row.yearly !== 0)
+
+const createExportRows = (rows) => {
+  const totalMonthly = rows.reduce((sum, row) => sum + row.monthly, 0)
+  const totalYearly = rows.reduce((sum, row) => sum + row.yearly, 0)
+  return [
+    ['Component', 'Per Month', 'Per Annum'],
+    ...rows.map((row) => [row.component, row.monthly, row.yearly]),
+    ['Total CTC', totalMonthly, totalYearly],
+  ]
+}
+
+const loadSheetJs = () =>
+  new Promise((resolve, reject) => {
+    if (window.XLSX) {
+      resolve(window.XLSX)
+      return
+    }
+
+    const script = document.createElement('script')
+    script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'
+    script.async = true
+    script.onload = () => {
+      if (window.XLSX) {
+        resolve(window.XLSX)
+        return
+      }
+      reject(new Error('SheetJS failed to initialize.'))
+    }
+    script.onerror = () => reject(new Error('Failed to load SheetJS script.'))
+    document.head.appendChild(script)
+  })
+
+export const exportCalculationToExcelCsv = async ({ components }) => {
+  const XLSX = await loadSheetJs()
+  const rows = toExportRows(components)
+  const worksheet = XLSX.utils.aoa_to_sheet(createExportRows(rows))
+
+  worksheet['!cols'] = [{ wch: 34 }, { wch: 16 }, { wch: 16 }]
+
+  const lastRowNumber = rows.length + 2
+  for (let rowNumber = 2; rowNumber <= lastRowNumber; rowNumber += 1) {
+    for (const column of ['B', 'C']) {
+      const cell = worksheet[`${column}${rowNumber}`]
+      if (!cell) continue
+      cell.z = '#,##0.00'
+    }
+  }
+
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'CTC')
+  XLSX.writeFile(workbook, 'ctc-calculation.xlsx')
   return 'Excel export downloaded.'
 }

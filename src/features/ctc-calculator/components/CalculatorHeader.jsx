@@ -6,7 +6,7 @@ export const CalculatorHeader = () => (
       className="h-10 w-auto sm:h-12"
     />
     <h1 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
-      Nadal CTC to Salary Calculator
+      Nadal CTC breakup
     </h1>
     <div className="h-10 w-10 sm:h-12 sm:w-12" aria-hidden="true" />
   </div>

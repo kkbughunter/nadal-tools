@@ -42,9 +42,13 @@ export const CtcCalculatorPage = () => {
     setCopyStatus('')
   }
 
-  const handleExportExcel = () => {
-    const message = exportCalculationToExcelCsv({ components })
-    setCopyStatus(message)
+  const handleExportExcel = async () => {
+    try {
+      const message = await exportCalculationToExcelCsv({ components })
+      setCopyStatus(message)
+    } catch (error) {
+      setCopyStatus(error?.message ?? 'Failed to export Excel file.')
+    }
   }
 
   return (
